@@ -1,0 +1,207 @@
+@use '../styles/variables' as *;
+
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background: $black;
+
+  &__bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 70% 50%, rgba($accent, 0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 80% at 20% 80%, rgba($accent, 0.06) 0%, transparent 50%);
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 80px,
+          rgba(255,255,255,0.015) 80px,
+          rgba(255,255,255,0.015) 81px
+        ),
+        repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 80px,
+          rgba(255,255,255,0.015) 80px,
+          rgba(255,255,255,0.015) 81px
+        );
+    }
+  }
+
+  &__content {
+    position: relative;
+    z-index: 2;
+    padding: 0 3rem;
+    max-width: 680px;
+
+    animation: heroIn 1s $ease both;
+  }
+
+  &__eyebrow {
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: $accent;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+
+    &::before {
+      content: '';
+      display: inline-block;
+      width: 32px;
+      height: 1px;
+      background: $accent;
+    }
+  }
+
+  &__title {
+    font-family: $font-display;
+    font-size: clamp(4.5rem, 10vw, 9rem);
+    line-height: 0.9;
+    letter-spacing: 0.02em;
+    color: $white;
+    margin-bottom: 1.5rem;
+
+    span {
+      display: block;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba($white, 0.3);
+    }
+  }
+
+  &__desc {
+    font-size: 1rem;
+    font-weight: 300;
+    color: $gray-light;
+    max-width: 400px;
+    margin-bottom: 2.5rem;
+    line-height: 1.8;
+  }
+
+  &__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 1rem 2rem;
+    background: $accent;
+    color: $white;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border-radius: $radius;
+    transition: all 0.25s $ease;
+
+    svg {
+      width: 16px;
+      height: 16px;
+      transition: transform 0.25s $ease;
+    }
+
+    &:hover {
+      background: $accent-lt;
+      gap: 1.2rem;
+
+      svg {
+        transform: translateX(4px);
+      }
+    }
+  }
+
+  &__stats {
+    position: absolute;
+    bottom: 3rem;
+    right: 3rem;
+    display: flex;
+    gap: 3rem;
+    z-index: 2;
+
+    animation: heroIn 1s 0.3s $ease both;
+  }
+
+  &__stat {
+    text-align: right;
+
+    strong {
+      display: block;
+      font-family: $font-display;
+      font-size: 2.5rem;
+      color: $white;
+      line-height: 1;
+    }
+
+    span {
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: $gray-light;
+    }
+  }
+
+  &__scroll {
+    position: absolute;
+    bottom: 3rem;
+    left: 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    z-index: 2;
+    color: $gray-light;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+
+    &::after {
+      content: '';
+      width: 1px;
+      height: 48px;
+      background: linear-gradient(to bottom, $gray-light, transparent);
+      animation: scrollLine 1.5s ease-in-out infinite;
+    }
+  }
+
+  @media (max-width: 768px) {
+    min-height: 90vh;
+
+    &__content {
+      padding: 6rem 1.5rem 2rem;
+    }
+
+    &__stats {
+      display: none;
+    }
+
+    &__scroll {
+      display: none;
+    }
+  }
+}
+
+@keyframes heroIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scrollLine {
+  0%, 100% { opacity: 0; transform: scaleY(0); transform-origin: top; }
+  50% { opacity: 1; transform: scaleY(1); }
+}

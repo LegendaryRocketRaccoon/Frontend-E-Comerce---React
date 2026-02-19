@@ -1,0 +1,137 @@
+@use '../styles/variables' as *;
+
+.filters {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba($black, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid $border;
+  padding: 1rem 3rem;
+
+  &__inner {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  &__search {
+    position: relative;
+    flex: 1;
+    min-width: 200px;
+    max-width: 360px;
+
+    svg {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 15px;
+      height: 15px;
+      color: $gray-light;
+      pointer-events: none;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.65rem 1rem 0.65rem 2.6rem;
+      background: rgba($white, 0.05);
+      border: 1px solid $border;
+      border-radius: $radius;
+      color: $white;
+      font-family: $font-body;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+
+      &::placeholder {
+        color: $gray-light;
+      }
+
+      &:focus {
+        outline: none;
+        border-color: $accent;
+        background: rgba($white, 0.07);
+      }
+    }
+  }
+
+  &__categories {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  &__cat-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 100px;
+    border: 1px solid $border;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    color: $gray-light;
+    background: transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+
+    &:hover {
+      border-color: $accent;
+      color: $white;
+    }
+
+    &.active {
+      background: $accent;
+      border-color: $accent;
+      color: $white;
+    }
+  }
+
+  &__sort {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    label {
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: $gray-light;
+      white-space: nowrap;
+    }
+
+    select {
+      background: rgba($white, 0.05);
+      border: 1px solid $border;
+      border-radius: $radius;
+      color: $white;
+      font-family: $font-body;
+      font-size: 0.82rem;
+      padding: 0.5rem 0.8rem;
+      cursor: pointer;
+      transition: border-color 0.2s;
+
+      option {
+        background: $gray-dark;
+      }
+
+      &:focus {
+        outline: none;
+        border-color: $accent;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 0.8rem 1.5rem;
+
+    &__sort label {
+      display: none;
+    }
+
+    &__search {
+      max-width: 100%;
+    }
+  }
+}

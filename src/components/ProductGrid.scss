@@ -1,0 +1,96 @@
+@use '../styles/variables' as *;
+
+.grid-section {
+  padding: 4rem 3rem;
+
+  &__header {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+  }
+
+  &__title {
+    font-family: $font-display;
+    font-size: 3rem;
+    letter-spacing: 0.03em;
+    color: $white;
+  }
+
+  &__count {
+    font-size: 0.8rem;
+    color: $gray-light;
+    letter-spacing: 0.08em;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: $gap;
+  }
+
+  &__empty {
+    padding: 5rem 0;
+    text-align: center;
+    color: $gray-light;
+
+    p {
+      font-size: 1.1rem;
+      margin-top: 0.5rem;
+    }
+
+    span {
+      font-size: 3rem;
+    }
+  }
+
+  &__loading {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: $gap;
+  }
+
+  @media (max-width: 768px) {
+    padding: 2rem 1.5rem;
+
+    &__title {
+      font-size: 2rem;
+    }
+  }
+}
+
+
+.skeleton {
+  background: $gray-dark;
+  border: 1px solid $border;
+  border-radius: $radius;
+  overflow: hidden;
+
+  &__img {
+    aspect-ratio: 1 / 1;
+    background: linear-gradient(90deg, $gray-dark 25%, $gray-mid 50%, $gray-dark 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+  }
+
+  &__body {
+    padding: 1rem;
+  }
+
+  &__line {
+    height: 12px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, $gray-dark 25%, $gray-mid 50%, $gray-dark 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    margin-bottom: 0.6rem;
+
+    &--short { width: 60%; }
+    &--full  { width: 100%; }
+  }
+}
+
+@keyframes shimmer {
+  0%   { background-position:  200% 0; }
+  100% { background-position: -200% 0; }
+}
