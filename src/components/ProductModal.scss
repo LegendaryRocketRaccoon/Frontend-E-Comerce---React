@@ -35,7 +35,7 @@
       max-height: 95vh;
     }
 
-
+    // Custom scrollbar
     &::-webkit-scrollbar { width: 4px; }
     &::-webkit-scrollbar-track { background: transparent; }
     &::-webkit-scrollbar-thumb { background: $gray-mid; border-radius: 2px; }
@@ -88,6 +88,11 @@
     line-height: 1.1;
     color: $white;
     letter-spacing: 0.02em;
+    transition: color 0.2s;
+
+    &:hover {
+      color: $accent-lt;
+    }
   }
 
   &__price {

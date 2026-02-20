@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import './ProductModal.scss';
 
-export default function ProductModal({ product, onClose }) {
+export default function ProductModal({ product, onClose, onTitleClick }) {
   useEffect(() => {
     const handler = (e) => e.key === 'Escape' && onClose();
     document.addEventListener('keydown', handler);
@@ -37,7 +37,12 @@ export default function ProductModal({ product, onClose }) {
         <div className="modal__info">
           {categoryName && <p className="modal__category">{categoryName}</p>}
 
-          <h2 className="modal__title">{product.title}</h2>
+          <h2
+            className="modal__title"
+            onClick={() => onTitleClick?.(product)}
+            style={{ cursor: onTitleClick ? 'pointer' : 'default' }}
+            title={onTitleClick ? 'Ver página do produto' : undefined}
+          >{product.title}</h2>
 
           <p className="modal__price">{price}</p>
 

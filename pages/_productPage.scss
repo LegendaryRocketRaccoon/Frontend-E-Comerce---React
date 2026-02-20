@@ -1,0 +1,341 @@
+@use '../styles/variables' as *;
+
+.product-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 6rem 3rem 4rem;
+
+  &--loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+  }
+
+  &__skeleton {
+    width: 100%;
+    height: 400px;
+    background: linear-gradient(90deg, $gray-dark 25%, $gray-mid 50%, $gray-dark 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    border-radius: $radius;
+  }
+
+  &__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: $gray-light;
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-bottom: 2.5rem;
+    transition: color 0.2s;
+    padding: 0;
+    &:hover { color: $accent; }
+  }
+
+  &__main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    margin-bottom: 5rem;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+  }
+
+  &__img {
+    border-radius: 8px;
+    overflow: hidden;
+    background: $gray-dark;
+    aspect-ratio: 1 / 1;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    &-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 5rem;
+    }
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    padding-top: 0.5rem;
+  }
+
+  &__category {
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: $accent;
+  }
+
+  &__title {
+    font-family: $font-display;
+    font-size: clamp(1.8rem, 3vw, 2.8rem);
+    line-height: 1.1;
+    color: $white;
+    letter-spacing: 0.02em;
+  }
+
+  &__rating {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: 0.85rem;
+    color: $gray-light;
+    em { font-style: normal; }
+  }
+
+  &__price {
+    font-family: $font-display;
+    font-size: 2.5rem;
+    color: $accent;
+    letter-spacing: 0.02em;
+  }
+
+  &__desc {
+    font-size: 0.95rem;
+    color: $gray-light;
+    line-height: 1.8;
+  }
+
+  &__cart-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  &__qty {
+    display: flex;
+    align-items: center;
+    border: 1px solid $border;
+    border-radius: $radius;
+    overflow: hidden;
+
+    button {
+      width: 36px;
+      height: 40px;
+      background: rgba($white, 0.05);
+      border: none;
+      color: $white;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      &:hover { background: rgba($accent, 0.2); }
+    }
+
+    span {
+      width: 40px;
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+  }
+
+  &__add-btn {
+    flex: 1;
+    min-width: 180px;
+    padding: 0.9rem 1.5rem;
+    background: $accent;
+    color: $white;
+    border: none;
+    border-radius: $radius;
+    font-family: $font-body;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s;
+    &:hover:not(:disabled) { background: $accent-lt; }
+    &:disabled { opacity: 0.6; cursor: not-allowed; }
+  }
+
+  &__msg {
+    font-size: 0.82rem;
+    padding: 0.5rem 0.8rem;
+    border-radius: $radius;
+    &.success { color: #5cb85c; background: rgba(#5cb85c, 0.1); border: 1px solid rgba(#5cb85c, 0.2); }
+    &.error   { color: #e05252; background: rgba(#e05252, 0.1); border: 1px solid rgba(#e05252, 0.2); }
+  }
+
+
+  &__reviews {
+    border-top: 1px solid $border;
+    padding-top: 3rem;
+  }
+
+  &__reviews-title {
+    font-family: $font-display;
+    font-size: 2rem;
+    letter-spacing: 0.03em;
+    color: $white;
+    margin-bottom: 2rem;
+  }
+
+  &__review-form {
+    background: $gray-dark;
+    border: 1px solid $border;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    &-label {
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: $gray-light;
+    }
+
+    textarea {
+      padding: 0.75rem;
+      background: rgba($white, 0.04);
+      border: 1px solid $border;
+      border-radius: $radius;
+      color: $white;
+      font-family: $font-body;
+      font-size: 0.9rem;
+      resize: vertical;
+      transition: border-color 0.2s;
+      &::placeholder { color: rgba($gray-light, 0.5); }
+      &:focus { outline: none; border-color: $accent; }
+    }
+
+    button[type="submit"] {
+      align-self: flex-start;
+      padding: 0.7rem 1.5rem;
+      background: $accent;
+      color: $white;
+      border: none;
+      border-radius: $radius;
+      font-family: $font-body;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s;
+      &:hover:not(:disabled) { background: $accent-lt; }
+      &:disabled { opacity: 0.6; cursor: not-allowed; }
+    }
+  }
+
+  &__review-login {
+    padding: 1.5rem;
+    background: $gray-dark;
+    border: 1px solid $border;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+    color: $gray-light;
+    text-align: center;
+  }
+
+  &__no-reviews {
+    color: $gray-light;
+    font-style: italic;
+    padding: 1rem 0;
+  }
+
+  &__review-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  &__review-item {
+    padding: 1.2rem 1.5rem;
+    background: $gray-dark;
+    border: 1px solid $border;
+    border-radius: 8px;
+  }
+
+  &__review-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+  }
+
+  &__review-user {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: $white;
+  }
+
+  &__review-date {
+    font-size: 0.75rem;
+    color: $gray-light;
+    margin-left: auto;
+  }
+
+  &__review-comment {
+    font-size: 0.9rem;
+    color: $gray-light;
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    padding: 5rem 1.5rem 3rem;
+  }
+}
+
+
+.stars {
+  display: flex;
+  gap: 2px;
+
+  &__btn {
+    font-size: 1.2rem;
+    color: $gray-mid;
+    background: none;
+    border: none;
+    padding: 0;
+    line-height: 1;
+    transition: color 0.15s, transform 0.1s;
+
+    &.filled { color: #f5a623; }
+  }
+
+  &--interactive .stars__btn {
+    cursor: pointer;
+    &:hover { transform: scale(1.15); }
+  }
+
+  &--readonly .stars__btn {
+    cursor: default;
+    font-size: 1rem;
+  }
+}
+
+@keyframes shimmer {
+  0%   { background-position:  200% 0; }
+  100% { background-position: -200% 0; }
+}
