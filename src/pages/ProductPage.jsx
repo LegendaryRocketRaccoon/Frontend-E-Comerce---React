@@ -56,7 +56,7 @@ export default function ProductPage({ onAddedToCart }) {
     setCartMsg('');
     try {
       await addToCart(id, qty);
-      setCartMsg('Adicionado ao carrinho!');
+      setCartMsg('Adicionado ao carrinho.');
       onAddedToCart?.();
       setTimeout(() => setCartMsg(''), 3000);
     } catch (err) {
@@ -73,8 +73,8 @@ export default function ProductPage({ onAddedToCart }) {
     setReviewMsg('');
     try {
       const updated = await postReview(id, myRating, myComment);
-      setReviewMsg('Avaliação salva!');
-      // Refresh reviews and product rating
+      setReviewMsg('Avaliação salva.');
+
       const [prod, revs] = await Promise.all([getProduct(id), getReviews(id)]);
       setProduct(prod);
       setReviews(revs);
@@ -143,7 +143,7 @@ export default function ProductPage({ onAddedToCart }) {
               {addingCart ? 'Adicionando...' : 'Adicionar ao carrinho'}
             </button>
           </div>
-          {cartMsg && <p className={`product-page__msg ${cartMsg.includes('!') ? 'success' : 'error'}`}>{cartMsg}</p>}
+          {cartMsg && <p className={`product-page__msg ${cartMsg.includes('.') ? 'success' : 'error'}`}>{cartMsg}</p>}
         </div>
       </div>
 
@@ -162,7 +162,7 @@ export default function ProductPage({ onAddedToCart }) {
               placeholder="Escreva um comentário (opcional)..."
               rows={3}
             />
-            {reviewMsg && <p className={`product-page__msg ${reviewMsg.includes('!') ? 'success' : 'error'}`}>{reviewMsg}</p>}
+            {reviewMsg && <p className={`product-page__msg ${reviewMsg.includes('.') ? 'success' : 'error'}`}>{reviewMsg}</p>}
             <button type="submit" disabled={reviewing}>
               {reviewing ? 'Salvando...' : 'Enviar avaliação'}
             </button>
@@ -175,7 +175,7 @@ export default function ProductPage({ onAddedToCart }) {
 
         {/* List */}
         {reviews.length === 0 ? (
-          <p className="product-page__no-reviews">Nenhuma avaliação ainda. Seja o primeiro!</p>
+          <p className="product-page__no-reviews">Nenhuma avaliação ainda. Seja o primeiro.</p>
         ) : (
           <ul className="product-page__review-list">
             {reviews.map(r => (
