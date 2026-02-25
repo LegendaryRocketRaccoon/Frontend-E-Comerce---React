@@ -7,7 +7,7 @@ import './_cartPage.scss';
 export default function CartPage({ onCartChange }) {
   const { isLoggedIn } = useAuth();
   const navigate = useNavigate();
-  const [items, setItems]   = useState([]);
+  const [items, setItems]     = useState([]);
   const [loading, setLoading] = useState(true);
 
   const load = async () => {
@@ -26,16 +26,20 @@ export default function CartPage({ onCartChange }) {
     load();
   }, [isLoggedIn]);
 
-  const handleQty = async (productId, qty) => {
-    if (qty < 1) return handleRemove(productId);
-    await updateCart(productId, qty);
-    setItems(prev => prev.map(i => i.productId === productId ? { ...i, quantity: qty } : i));
+  const itemKey = (item) => `${item.productId}::${item.size ?? ''}`;
+
+  const handleQty = async (item, qty) => {
+    if (qty < 1) return handleRemove(item);
+    await updateCart(item.productId, qty, item.size);
+    setItems(prev => prev.map(i =>
+      itemKey(i) === itemKey(item) ? { ...i, quantity: qty } : i
+    ));
     onCartChange?.();
   };
 
-  const handleRemove = async (productId) => {
-    await removeFromCart(productId);
-    setItems(prev => prev.filter(i => i.productId !== productId));
+  const handleRemove = async (item) => {
+    await removeFromCart(item.productId, item.size);
+    setItems(prev => prev.filter(i => itemKey(i) !== itemKey(item)));
     onCartChange?.();
   };
 
@@ -81,31 +85,39 @@ export default function CartPage({ onCartChange }) {
         <div className="cart-page__layout">
           <ul className="cart-page__list">
             {items.map(item => {
-              const p = item.product;
-              const price = p?.price?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) ?? '—';
+              const p        = item.product;
+              const price    = p?.price?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) ?? '—';
               const subtotal = ((p?.price ?? 0) * item.quantity).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
               return (
-                <li key={item.productId} className="cart-item">
+                <li key={itemKey(item)} className="cart-item">
                   <div className="cart-item__img" onClick={() => navigate(`/product/${item.productId}`)}>
                     {p?.imageUrl
                       ? <img src={p.imageUrl} alt={p.title} />
                       : <span>📦</span>
                     }
                   </div>
+
                   <div className="cart-item__info">
                     <p className="cart-item__name" onClick={() => navigate(`/product/${item.productId}`)}>
                       {p?.title ?? 'Produto removido'}
                     </p>
                     <p className="cart-item__price">{price} cada</p>
+                    {/* Exibe o tamanho selecionado */}
+                    {item.size && (
+                      <span className="cart-item__size">Tamanho: {item.size}</span>
+                    )}
                   </div>
+
                   <div className="cart-item__qty">
-                    <button onClick={() => handleQty(item.productId, item.quantity - 1)}>−</button>
+                    <button onClick={() => handleQty(item, item.quantity - 1)}>−</button>
                     <span>{item.quantity}</span>
-                    <button onClick={() => handleQty(item.productId, item.quantity + 1)}>+</button>
+                    <button onClick={() => handleQty(item, item.quantity + 1)}>+</button>
                   </div>
+
                   <p className="cart-item__subtotal">{subtotal}</p>
-                  <button className="cart-item__remove" onClick={() => handleRemove(item.productId)} aria-label="Remover">
+
+                  <button className="cart-item__remove" onClick={() => handleRemove(item)} aria-label="Remover">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <polyline points="3 6 5 6 21 6"/>
                       <path d="M19 6l-1 14H6L5 6"/>

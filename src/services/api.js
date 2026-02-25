@@ -1,6 +1,5 @@
 const BASE_URL = 'http://localhost:3000';
 
-
 export function getAccessToken()  { return localStorage.getItem('accessToken'); }
 export function getRefreshToken() { return localStorage.getItem('refreshToken'); }
 
@@ -14,7 +13,6 @@ export function clearTokens() {
   localStorage.removeItem('refreshToken');
   localStorage.removeItem('user');
 }
-
 
 async function request(path, options = {}) {
   const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
@@ -44,6 +42,8 @@ async function request(path, options = {}) {
     }
   }
 
+  if (res.status === 204) return null;
+
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.error || `Erro ${res.status}`);
@@ -58,15 +58,21 @@ export async function register(name, email, password) {
   localStorage.setItem('user', JSON.stringify(data.user));
   return data;
 }
+
 export async function login(email, password) {
   const data = await request('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) });
   saveTokens(data);
   localStorage.setItem('user', JSON.stringify(data.user));
   return data;
 }
+
 export async function logout() {
   const refreshToken = getRefreshToken();
-  await fetch(`${BASE_URL}/auth/logout`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ refreshToken }) }).catch(() => {});
+  await fetch(`${BASE_URL}/auth/logout`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ refreshToken }),
+  }).catch(() => {});
   clearTokens();
 }
 
@@ -77,8 +83,9 @@ export const getProducts = (params = {}) => {
   if (params.sort)   qs.set('sort', params.sort);
   return request(`/products${qs.toString() ? '?' + qs : ''}`);
 };
-export const getProduct              = (id)          => request(`/products/${id}`);
-export const getProductsByCategory   = (catId, p={}) => {
+
+export const getProduct            = (id)           => request(`/products/${id}`);
+export const getProductsByCategory = (catId, p = {}) => {
   const qs = new URLSearchParams();
   if (p.sort) qs.set('sort', p.sort);
   return request(`/products/category/${catId}${qs.toString() ? '?' + qs : ''}`);
@@ -86,13 +93,49 @@ export const getProductsByCategory   = (catId, p={}) => {
 export const getCategories = () => request('/categories');
 
 
-export const getCart        = ()                    => request('/cart');
-export const addToCart      = (productId, qty=1)    => request('/cart', { method: 'POST', body: JSON.stringify({ productId, quantity: qty }) });
-export const updateCart     = (productId, quantity) => request(`/cart/${productId}`, { method: 'PATCH', body: JSON.stringify({ quantity }) });
-export const removeFromCart = (productId)           => request(`/cart/${productId}`, { method: 'DELETE' });
-export const clearCart      = ()                    => request('/cart', { method: 'DELETE' });
+export const getCart = () => request('/cart');
+
+/**
+ * Para adicionar produtos ao carrinho.
+ * @param {string} productId
+ * @param {number} qty
+ * @param {string|null} size
+ */
+export const addToCart = (productId, qty = 1, size = null) =>
+  request('/cart', {
+    method: 'POST',
+    body: JSON.stringify({ productId, quantity: qty, ...(size ? { size } : {}) }),
+  });
+
+/**
+ * Para atualizar quantidade de um item.
+ * @param {string} productId
+ * @param {number} quantity
+ * @param {string|null} size
+ */
+export const updateCart = (productId, quantity, size = null) => {
+  const qs = size ? `?size=${encodeURIComponent(size)}` : '';
+  return request(`/cart/${productId}${qs}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ quantity }),
+  });
+};
+
+/**
+ * Para remover um item do carrinho.
+ * @param {string} productId
+ * @param {string|null} size
+ */
+export const removeFromCart = (productId, size = null) => {
+  const qs = size ? `?size=${encodeURIComponent(size)}` : '';
+  return request(`/cart/${productId}${qs}`, { method: 'DELETE' });
+};
+
+export const clearCart = () => request('/cart', { method: 'DELETE' });
 
 
-export const getReviews   = (productId)              => request(`/reviews/${productId}`);
-export const postReview   = (productId, rating, comment) => request(`/reviews/${productId}`, { method: 'POST', body: JSON.stringify({ rating, comment }) });
-export const deleteReview = (productId)              => request(`/reviews/${productId}`, { method: 'DELETE' });
+export const getReviews   = (productId) => request(`/reviews/${productId}`);
+export const postReview   = (productId, rating, comment) =>
+  request(`/reviews/${productId}`, { method: 'POST', body: JSON.stringify({ rating, comment }) });
+export const deleteReview = (productId) =>
+  request(`/reviews/${productId}`, { method: 'DELETE' });

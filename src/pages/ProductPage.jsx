@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getProduct, getReviews, postReview, addToCart } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
+import SizeSelector from '../components/sizeSelector';
 import './_productPage.scss';
 
 function StarRating({ value, onChange, readOnly = false }) {
@@ -25,13 +26,13 @@ function StarRating({ value, onChange, readOnly = false }) {
 }
 
 export default function ProductPage({ onAddedToCart }) {
-  const { id } = useParams();
-  const navigate = useNavigate();
+  const { id }      = useParams();
+  const navigate    = useNavigate();
   const { isLoggedIn } = useAuth();
 
-  const [product, setProduct]   = useState(null);
-  const [reviews, setReviews]   = useState([]);
-  const [loading, setLoading]   = useState(true);
+  const [product, setProduct] = useState(null);
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [myRating, setMyRating]   = useState(0);
   const [myComment, setMyComment] = useState('');
@@ -42,21 +43,30 @@ export default function ProductPage({ onAddedToCart }) {
   const [cartMsg, setCartMsg]       = useState('');
   const [qty, setQty]               = useState(1);
 
+
+  const [selectedSize, setSelectedSize] = useState(null);
+
   useEffect(() => {
     setLoading(true);
+    setSelectedSize(null);
     Promise.all([getProduct(id), getReviews(id)])
       .then(([prod, revs]) => { setProduct(prod); setReviews(revs); })
       .catch(() => navigate('/'))
       .finally(() => setLoading(false));
   }, [id]);
 
+  const hasSizes      = product?.sizes && product.sizes.length > 0;
+  const needsSizeMsg  = hasSizes && !selectedSize;
+
   const handleAddCart = async () => {
     if (!isLoggedIn) { setCartMsg('Faça login para adicionar ao carrinho.'); return; }
+    if (needsSizeMsg) { setCartMsg('Selecione um tamanho antes de continuar.'); return; }
+
     setAddingCart(true);
     setCartMsg('');
     try {
-      await addToCart(id, qty);
-      setCartMsg('Adicionado ao carrinho.');
+      await addToCart(id, qty, selectedSize);
+      setCartMsg(`Adicionado ao carrinho${selectedSize ? ` (${selectedSize})` : ''}.`);
       onAddedToCart?.();
       setTimeout(() => setCartMsg(''), 3000);
     } catch (err) {
@@ -72,9 +82,8 @@ export default function ProductPage({ onAddedToCart }) {
     setReviewing(true);
     setReviewMsg('');
     try {
-      const updated = await postReview(id, myRating, myComment);
+      await postReview(id, myRating, myComment);
       setReviewMsg('Avaliação salva.');
-
       const [prod, revs] = await Promise.all([getProduct(id), getReviews(id)]);
       setProduct(prod);
       setReviews(revs);
@@ -98,6 +107,9 @@ export default function ProductPage({ onAddedToCart }) {
   const avg   = product.rating?.avg?.toFixed(1) ?? '0.0';
   const total = product.rating?.total ?? 0;
 
+
+  const cartMsgIsSuccess = cartMsg.includes('carrinho');
+
   return (
     <div className="product-page">
       <button className="product-page__back" onClick={() => navigate(-1)}>
@@ -105,7 +117,7 @@ export default function ProductPage({ onAddedToCart }) {
       </button>
 
       <div className="product-page__main">
-        {/* Image */}
+        {/* Imagem */}
         <div className="product-page__img">
           {product.imageUrl
             ? <img src={product.imageUrl} alt={product.title} />
@@ -113,7 +125,7 @@ export default function ProductPage({ onAddedToCart }) {
           }
         </div>
 
-        {/* Info */}
+        {/* Informações */}
         <div className="product-page__info">
           {product.category?.name && (
             <p className="product-page__category">{product.category.name}</p>
@@ -129,6 +141,14 @@ export default function ProductPage({ onAddedToCart }) {
 
           <p className="product-page__desc">{product.description}</p>
 
+          {/* ── Seletor de tamanho ── */}
+          <SizeSelector
+            sizes={product.sizes}
+            selected={selectedSize}
+            onChange={setSelectedSize}
+          />
+
+          {/* ── Quantidade + Botão ── */}
           <div className="product-page__cart-row">
             <div className="product-page__qty">
               <button onClick={() => setQty(q => Math.max(1, q - 1))}>−</button>
@@ -138,20 +158,25 @@ export default function ProductPage({ onAddedToCart }) {
             <button
               className="product-page__add-btn"
               onClick={handleAddCart}
-              disabled={addingCart}
+              disabled={addingCart || needsSizeMsg}
+              title={needsSizeMsg ? 'Selecione um tamanho primeiro' : undefined}
             >
               {addingCart ? 'Adicionando...' : 'Adicionar ao carrinho'}
             </button>
           </div>
-          {cartMsg && <p className={`product-page__msg ${cartMsg.includes('.') ? 'success' : 'error'}`}>{cartMsg}</p>}
+
+          {cartMsg && (
+            <p className={`product-page__msg ${cartMsgIsSuccess ? 'success' : 'error'}`}>
+              {cartMsg}
+            </p>
+          )}
         </div>
       </div>
 
-      {/* Reviews */}
+      {/* Avaliações */}
       <section className="product-page__reviews">
         <h2 className="product-page__reviews-title">Avaliações</h2>
 
-        {/* Write review */}
         {isLoggedIn ? (
           <form className="product-page__review-form" onSubmit={handleReview}>
             <p className="product-page__review-form-label">Sua avaliação</p>
@@ -162,7 +187,11 @@ export default function ProductPage({ onAddedToCart }) {
               placeholder="Escreva um comentário (opcional)..."
               rows={3}
             />
-            {reviewMsg && <p className={`product-page__msg ${reviewMsg.includes('.') ? 'success' : 'error'}`}>{reviewMsg}</p>}
+            {reviewMsg && (
+              <p className={`product-page__msg ${reviewMsg.includes('.') ? 'success' : 'error'}`}>
+                {reviewMsg}
+              </p>
+            )}
             <button type="submit" disabled={reviewing}>
               {reviewing ? 'Salvando...' : 'Enviar avaliação'}
             </button>
@@ -173,7 +202,6 @@ export default function ProductPage({ onAddedToCart }) {
           </p>
         )}
 
-        {/* List */}
         {reviews.length === 0 ? (
           <p className="product-page__no-reviews">Nenhuma avaliação ainda. Seja o primeiro.</p>
         ) : (
